@@ -15,20 +15,24 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/check', (req: Request, res: Response) => {
-  res.send('Health Check!');
-});
-app.use('/auth', authRouter);
-
 app.use((req, res, next) => {
   // TEMP AUTH
-  if (!req.headers?.authorization) {
-    res.status(401).send('Unauthorized');
+  if (
+    !req.headers?.authorization &&
+    !req.originalUrl.includes('/auth') &&
+    !req.originalUrl.includes('/check')
+  ) {
+    res.status(401).send('Unauthzorized');
     return;
   }
 
   next();
 });
+
+app.get('/check', (req: Request, res: Response) => {
+  res.send('Health Check!');
+});
+app.use('/auth', authRouter);
 
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);
