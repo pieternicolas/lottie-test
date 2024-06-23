@@ -1,0 +1,28 @@
+services:
+  frontend:
+    image: node:20-alpine
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app/client
+    working_dir: /app/client
+    command: sh -c "npm install && npm run dev"
+
+  backend:
+    image: node:20-alpine
+    ports:
+      - "5174:3000"
+    volumes:
+      - ./backend:/app/server
+    working_dir: /app/server
+    command: sh -c "npm install && npm run dev"
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongodb-data:/data/db
+
+volumes:
+  mongodb-data:

@@ -1,0 +1,17 @@
+{
+  "name": "lottie-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev:frontend": "pnpm --filter \"frontend\" run dev",
+    "dev:backend": "pnpm --filter \"backend\" run dev",
+    "dev": "pnpm run dev:frontend & pnpm run dev:backend"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "prettier": "^3.3.2"
+  }
+}
