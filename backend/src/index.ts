@@ -1,8 +1,9 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
+import cors from 'cors';
 
 import { connectDatabase } from './db';
-import userRouter from './controllers/userController';
+import authRouter from './controllers/authController';
 
 dotenv.config();
 
@@ -10,8 +11,14 @@ const port = process.env.PORT || 3000;
 const app: Express = express();
 connectDatabase();
 
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.get('/check', (req: Request, res: Response) => {
+  res.send('Health Check!');
+});
+app.use('/auth', authRouter);
 
 app.use((req, res, next) => {
   // TEMP AUTH
@@ -22,12 +29,6 @@ app.use((req, res, next) => {
 
   next();
 });
-
-app.get('/', (req: Request, res: Response) => {
-  res.send('Health Check!');
-});
-
-app.use('/user', userRouter);
 
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);

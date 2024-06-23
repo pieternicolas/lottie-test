@@ -1,19 +1,19 @@
 import express from 'express';
 
-import userSchema from './../models/user';
+import User from '../models/user';
 
-const userRouter = express.Router();
+const authRouter = express.Router();
 
-userRouter.post('/login', async (req, res) => {
+authRouter.post('/login', async (req, res) => {
   try {
-    const findExistingUser = await userSchema.findOne({ name: req.body.name });
+    const findExistingUser = await User.findOne({ name: req.body.name });
 
     if (findExistingUser) {
       res.json({
         data: findExistingUser,
       });
     } else {
-      const newUser = new userSchema({
+      const newUser = new User({
         name: req.body.name,
       });
       await newUser.save();
@@ -27,4 +27,4 @@ userRouter.post('/login', async (req, res) => {
   }
 });
 
-export default userRouter;
+export default authRouter;
