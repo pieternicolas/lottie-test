@@ -13,7 +13,7 @@ export type LoginFormData = z.infer<typeof loginSchema>;
 export const currentUserAtom = atomWithStorage<{
   name: string;
   id: string;
-} | null>('currentUser', null);
+} | null>('currentUser', null, undefined, { getOnInit: true });
 
 export const loginAtom = atomWithMutation(() => ({
   mutationKey: ['login'],
