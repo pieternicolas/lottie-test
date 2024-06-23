@@ -4,9 +4,12 @@
     "module": "commonjs", // Set the module system (adjust if needed)
     "outDir": "dist", // Output directory for compiled JavaScript
     "strict": true, // Enable strict mode for type checking
-    "esModuleInterop": true // Allow usage of modern ES modules
+    "esModuleInterop": true, // Allow usage of modern ES modules
   },
   "include": [
-    "src"
-  ] // Specify the directory to include for compilation
+    "src",
+  ], // Specify the directory to include for compilation
+  "exclude": [
+    "node_modules"
+  ]
 }

@@ -2,6 +2,7 @@ import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 
 import { connectDatabase } from './db';
+import userRouter from './controllers/userController';
 
 dotenv.config();
 
@@ -25,6 +26,8 @@ app.use((req, res, next) => {
 app.get('/', (req: Request, res: Response) => {
   res.send('Health Check!');
 });
+
+app.use('/user', userRouter);
 
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);
