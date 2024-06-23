@@ -1,22 +1,36 @@
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 
 import TextInput from '~/components/TextInput';
-import { currentUserAtom } from '~/store/auth';
+import {
+  LoginFormData,
+  currentUserAtom,
+  loginAtom,
+  loginSchema,
+} from '~/store/auth';
 
-import { loginDefaultValues, loginSchema } from './form';
+const loginDefaultValues: LoginFormData = {
+  name: '',
+};
 
 const Login = () => {
-  const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
+  const setCurrentUser = useSetAtom(currentUserAtom);
 
   const { handleSubmit, control } = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: loginDefaultValues,
   });
 
+  const [{ mutateAsync, isPending }] = useAtom(loginAtom);
+
   const onSubmit = handleSubmit(async (data) => {
-    setCurrentUser(data.name);
+    const result = await mutateAsync({ name: data.name });
+
+    setCurrentUser({
+      name: result.data?.name,
+      id: result.data?._id,
+    });
   });
 
   return (
@@ -42,6 +56,7 @@ const Login = () => {
           <button
             type="submit"
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            disabled={isPending}
           >
             Submit
           </button>
