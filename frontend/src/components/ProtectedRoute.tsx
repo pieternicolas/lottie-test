@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 
 import { currentUserAtom } from '~/store/auth';
+import Layout from './Layout';
 
 type ProtectedRouteProps = {
   children: ReactNode;
@@ -15,7 +16,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     return <Navigate to="/login" replace />;
   }
 
-  return children;
+  return <Layout>{children}</Layout>;
 };
 
 export default ProtectedRoute;

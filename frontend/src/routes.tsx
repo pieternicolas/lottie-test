@@ -4,8 +4,8 @@ import {
   createRoutesFromElements,
 } from 'react-router-dom';
 
-import App from '~/pages/App';
 import Login from '~/pages/Login';
+import Home from '~/pages/Home';
 import ProtectedRoute from '~/components/ProtectedRoute';
 
 const router: ReturnType<typeof createBrowserRouter> = createBrowserRouter(
@@ -15,7 +15,7 @@ const router: ReturnType<typeof createBrowserRouter> = createBrowserRouter(
         path="/"
         element={
           <ProtectedRoute>
-            <App />
+            <Home />
           </ProtectedRoute>
         }
       />

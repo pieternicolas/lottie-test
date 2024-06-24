@@ -9,12 +9,15 @@ import {
   loginAtom,
   loginSchema,
 } from '~/store/auth';
+import { useNavigate } from 'react-router-dom';
 
 const loginDefaultValues: LoginFormData = {
   name: '',
 };
 
 const Login = () => {
+  const navigate = useNavigate();
+
   const setCurrentUser = useSetAtom(currentUserAtom);
 
   const { handleSubmit, control } = useForm({
@@ -27,10 +30,13 @@ const Login = () => {
   const onSubmit = handleSubmit(async (data) => {
     const result = await mutateAsync({ name: data.name });
 
-    setCurrentUser({
-      name: result.data?.name,
-      id: result.data?._id,
-    });
+    if (result.data) {
+      setCurrentUser({
+        name: result.data?.name,
+        id: result.data?._id,
+      });
+      navigate('/');
+    }
   });
 
   return (
