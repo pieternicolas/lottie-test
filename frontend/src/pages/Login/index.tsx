@@ -1,6 +1,7 @@
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAtom, useSetAtom } from 'jotai';
+import { useNavigate } from 'react-router-dom';
 
 import TextInput from '~/components/TextInput';
 import {
@@ -9,7 +10,7 @@ import {
   loginAtom,
   loginSchema,
 } from '~/store/auth';
-import { useNavigate } from 'react-router-dom';
+import Card from '~/components/Card';
 
 const loginDefaultValues: LoginFormData = {
   name: '',
@@ -41,7 +42,7 @@ const Login = () => {
 
   return (
     <div className="h-full w-full bg-gradient-to-r from-cyan-500 to-blue-500 flex justify-center items-center">
-      <div className="w-1/2 max-w-[500px] bg-white rounded-lg py-4 px-6 shadow-lg">
+      <Card className="w-1/2 max-w-[500px]">
         <h1 className="text-2xl font-bold">Hi there!</h1>
         <p className="mb-4">Please enter your name to continue</p>
 
@@ -67,7 +68,7 @@ const Login = () => {
             Submit
           </button>
         </form>
-      </div>
+      </Card>
     </div>
   );
 };
