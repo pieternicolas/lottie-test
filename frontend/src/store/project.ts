@@ -4,7 +4,18 @@ import { atomWithMutation, atomWithQuery } from 'jotai-tanstack-query';
 
 import { currentUserAtom } from './auth';
 
-export type Project = Record<string, any>;
+export type ProjectAnimation = {
+  nm: string;
+  w: number;
+  h: number;
+  layers: Array<Record<string, any>>;
+  fr: number;
+};
+
+export type Project = {
+  name: string;
+  animation: ProjectAnimation;
+};
 
 export const chosenProjectJsonUrlAtom = atom<string>('');
 
