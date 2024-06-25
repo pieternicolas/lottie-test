@@ -115,8 +115,6 @@ const ProjectView = () => {
         </div>
 
         <div className="flex-1 p-4">
-          <p className="text-lg font-bold mb-2">Layers</p>
-
           <LayerList
             layers={projectData?.animation?.layers ?? []}
             onUpdateLayers={handleUpdateLayers}
