@@ -4,9 +4,15 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDebounce, useDeepCompareEffect } from 'ahooks';
 
-import { Project, getProjectByIdAtom, projectIdAtom } from '~/store/project';
+import {
+  Project,
+  ProjectAnimation,
+  getProjectByIdAtom,
+  projectIdAtom,
+} from '~/store/project';
 import { socket } from '~/utils/socket';
 import RangeInput from '~/components/RangeInput';
+import LayerList from './LayerList';
 
 const ProjectView = () => {
   const { projectId } = useParams();
@@ -27,6 +33,21 @@ const ProjectView = () => {
             animation: {
               ...prev.animation,
               fr: value,
+            },
+          } as Project)
+        : null
+    );
+  };
+
+  const handleUpdateLayers = (layers: ProjectAnimation['layers']) => {
+    setHasEdited(true);
+    setProjectData((prev) =>
+      prev
+        ? ({
+            ...prev,
+            animation: {
+              ...prev.animation,
+              layers,
             },
           } as Project)
         : null
@@ -81,6 +102,8 @@ const ProjectView = () => {
       </div>
       <div className="flex-1 flex max-w-[30vw]">
         <div className="p-4 border-r border-gray-300 flex-1">
+          <p className="text-lg font-bold mb-2">Controls</p>
+
           <RangeInput
             label="Framerate"
             min={0}
@@ -88,17 +111,16 @@ const ProjectView = () => {
             value={Number(projectData?.animation?.fr ?? 0)}
             onChange={handleChangeSpeed}
             step={1}
-            className="w-full"
           />
         </div>
 
         <div className="flex-1 p-4">
-          <p className="text-lg font-bold">Layers</p>
-          {projectData?.animation?.layers.map((layer, index) => (
-            <div key={index}>
-              <p>{layer.nm}</p>
-            </div>
-          ))}
+          <p className="text-lg font-bold mb-2">Layers</p>
+
+          <LayerList
+            layers={projectData?.animation?.layers ?? []}
+            onUpdateLayers={handleUpdateLayers}
+          />
         </div>
       </div>
     </div>
