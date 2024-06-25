@@ -6,6 +6,7 @@ import { useDebounce, useDeepCompareEffect } from 'ahooks';
 
 import { Project, getProjectByIdAtom, projectIdAtom } from '~/store/project';
 import { socket } from '~/utils/socket';
+import RangeInput from '~/components/RangeInput';
 
 const ProjectView = () => {
   const { projectId } = useParams();
@@ -17,7 +18,7 @@ const ProjectView = () => {
   const [projectData, setProjectData] = useState<Project | null>(null);
   const throttledProjectData = useDebounce(projectData, { wait: 500 });
 
-  const handleChangeSpeed = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeSpeed = (value: number) => {
     setHasEdited(true);
     setProjectData((prev) =>
       prev
@@ -25,7 +26,7 @@ const ProjectView = () => {
             ...prev,
             animation: {
               ...prev.animation,
-              fr: Number(e.target.value),
+              fr: value,
             },
           } as Project)
         : null
@@ -80,12 +81,14 @@ const ProjectView = () => {
       </div>
       <div className="flex-1 flex max-w-[30vw]">
         <div className="p-4 border-r border-gray-300 flex-1">
-          <input
-            type="range"
+          <RangeInput
+            label="Framerate"
             min={0}
             max={120}
-            value={projectData?.animation?.fr}
+            value={Number(projectData?.animation?.fr ?? 0)}
             onChange={handleChangeSpeed}
+            step={1}
+            className="w-full"
           />
         </div>
 
