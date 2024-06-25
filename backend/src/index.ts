@@ -1,15 +1,25 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import http from 'http';
+import { Server as SocketServer } from 'socket.io';
 
 import { connectDatabase } from './db';
 import authRouter from './controllers/authController';
 import projectRouter from './controllers/projectController';
+import socketRouter from './controllers/socketController';
 
 dotenv.config();
 
 const port = process.env.PORT || 3000;
 const app: Express = express();
+const server = http.createServer(app);
+const io = new SocketServer(server, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST'],
+  },
+});
 connectDatabase();
 
 app.use(cors());
@@ -35,7 +45,8 @@ app.get('/check', (req: Request, res: Response) => {
 });
 app.use('/auth', authRouter);
 app.use('/projects', projectRouter);
+socketRouter(io);
 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Server is listening on port ${port}`);
 });

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { atom } from 'jotai';
 import { atomWithMutation, atomWithQuery } from 'jotai-tanstack-query';
+
 import { currentUserAtom } from './auth';
 
 export type Project = Record<string, any>;
