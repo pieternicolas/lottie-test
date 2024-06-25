@@ -101,7 +101,7 @@ const ProjectView = () => {
         />
       </div>
       <div className="flex-1 flex max-w-[30vw]">
-        <div className="p-4 border-r border-gray-300 flex-1">
+        <div className="p-4 border-r border-gray-300 w-1/2">
           <p className="text-lg font-bold mb-2">Controls</p>
 
           <RangeInput
@@ -114,7 +114,7 @@ const ProjectView = () => {
           />
         </div>
 
-        <div className="flex-1 p-4">
+        <div className="w-1/2 p-4">
           <LayerList
             layers={projectData?.animation?.layers ?? []}
             onUpdateLayers={handleUpdateLayers}

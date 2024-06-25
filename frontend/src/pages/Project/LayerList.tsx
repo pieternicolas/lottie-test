@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { DragEvent, useMemo, useState } from 'react';
+import { DragEvent, useEffect, useMemo, useState } from 'react';
 
 import { ProjectAnimation } from '~/store/project';
 
@@ -10,6 +10,7 @@ type LayerListProps = {
 
 const LayerList = ({ layers, onUpdateLayers }: LayerListProps) => {
   const [selectedLayers, setSelectedLayers] = useState<string[]>([]);
+  const [hiddenLayers, setHiddenLayers] = useState<string[]>([]);
   const [draggingItem, setDraggingItem] = useState<
     ProjectAnimation['layers'][0] | null
   >(null);
@@ -57,6 +58,21 @@ const LayerList = ({ layers, onUpdateLayers }: LayerListProps) => {
     }
   };
 
+  const handleToggleHiddenLayer = (layerName: string) => {
+    onUpdateLayers(
+      layers.map((l) => {
+        if (l.nm === layerName) {
+          return { ...l, hd: !l.hd };
+        }
+        return l;
+      })
+    );
+  };
+
+  useEffect(() => {
+    setHiddenLayers(layers.filter((l) => l.hd).map((l) => l.nm));
+  }, [layers]);
+
   const sortedLayers = useMemo(
     () => layers.sort((a, b) => a.ind - b.ind),
     [layers]
@@ -91,9 +107,34 @@ const LayerList = ({ layers, onUpdateLayers }: LayerListProps) => {
           onDrop={() => handleDrop(layer)}
           onClick={() => handleSelectLayer(layer.nm)}
         >
-          <p>{layer.nm}</p>
+          <p className="whitespace-nowrap overflow-hidden text-ellipsis">
+            {layer.nm}
+          </p>
 
-          {selectedLayers.includes(layer.nm) && <span>&#10003;</span>}
+          <div className="flex gap-1">
+            {selectedLayers.includes(layer.nm) && <span>&#10003;</span>}
+            {hiddenLayers.includes(layer.nm) ? (
+              <span
+                className="hover:text-green-500 font-bold"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleToggleHiddenLayer(layer.nm);
+                }}
+              >
+                &#8722;
+              </span>
+            ) : (
+              <span
+                className="hover:text-red-500"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleToggleHiddenLayer(layer.nm);
+                }}
+              >
+                &#9788;
+              </span>
+            )}
+          </div>
         </div>
       ))}
     </div>
