@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { atom } from 'jotai';
 import { atomWithMutation, atomWithQuery } from 'jotai-tanstack-query';
-import { atomWithStorage } from 'jotai/utils';
 import { currentUserAtom } from './auth';
 
 export type Project = Record<string, any>;
@@ -40,6 +39,23 @@ export const saveNewProjectAtom = atomWithMutation((get) => ({
   },
 }));
 
-export const projectAtom = atomWithStorage<Project>('project', {}, undefined, {
-  getOnInit: true,
-});
+export const projectIdAtom = atom<string>('');
+export const projectAtom = atom<Project | null>(null);
+
+export const getProjectByIdAtom = atomWithQuery((get) => ({
+  queryKey: ['getProjectById', get(projectIdAtom)],
+  queryFn: async () => {
+    const res = await axios<{
+      data: Project;
+    }>({
+      method: 'get',
+      baseURL: import.meta.env.VITE_API_URL,
+      url: `/projects/${get(projectIdAtom)}`,
+      headers: {
+        Authorization: `Bearer ${get(currentUserAtom)?.id}`,
+      },
+    });
+    return res.data;
+  },
+  enabled: Boolean(get(projectIdAtom)),
+}));

@@ -1,11 +1,14 @@
-import { useSetAtom } from 'jotai';
+import { useAtom } from 'jotai';
 import { ChangeEvent, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import { Project, projectAtom } from '~/store/project';
+import { Project, saveNewProjectAtom } from '~/store/project';
 import { lottieParser } from '~/utils/lottie-parser';
 
 const UploadAnimationJson = () => {
-  const setProject = useSetAtom(projectAtom);
+  const navigate = useNavigate();
+
+  const [{ mutateAsync: saveNewProjectMutate }] = useAtom(saveNewProjectAtom);
 
   const [animationData, setAnimationData] = useState<Project | null>(null);
   const [hasError, setHasError] = useState(false);
@@ -24,14 +27,31 @@ const UploadAnimationJson = () => {
   };
 
   useEffect(() => {
-    if (animationData) {
-      try {
-        setProject(lottieParser.parse(JSON.stringify(animationData)));
-      } catch (error) {
-        console.error(error);
-        setHasError(true);
+    (async () => {
+      if (animationData) {
+        try {
+          const animationDataParsed = lottieParser.parse(
+            JSON.stringify(animationData)
+          );
+
+          if (!animationDataParsed) {
+            throw new Error("Can't parse animation data");
+          }
+
+          const res = await saveNewProjectMutate({
+            name: 'New Project',
+            animation: JSON.parse(JSON.stringify(animationData)),
+          });
+
+          if (res.data) {
+            navigate(`/project/${res.data?._id}`);
+          }
+        } catch (error) {
+          console.error(error);
+          setHasError(true);
+        }
       }
-    }
+    })();
   }, [animationData]);
 
   return (

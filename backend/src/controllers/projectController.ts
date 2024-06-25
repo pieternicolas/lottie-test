@@ -17,8 +17,6 @@ projectRouter.post('/new', async (req, res) => {
       data: savedProject,
     });
   } catch (error) {
-    console.log(error);
-
     res.status(500).json({ error: 'Internal server error' });
   }
 });

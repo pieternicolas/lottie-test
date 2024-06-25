@@ -1,6 +1,7 @@
 import { useQuery } from '@apollo/client';
 import { useAtom, useSetAtom } from 'jotai';
 import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import Button from '~/components/Button';
 import Loader from '~/components/Loader';
@@ -18,6 +19,8 @@ import {
 type FeaturedAnimationListProps = {};
 
 const FeaturedAnimationList = ({}: FeaturedAnimationListProps) => {
+  const navigate = useNavigate();
+
   const setChosenProjectUrl = useSetAtom(chosenProjectJsonUrlAtom);
 
   const [{ data: projectJsonData }] = useAtom(getProjectJsonAtom);
@@ -72,12 +75,18 @@ const FeaturedAnimationList = ({}: FeaturedAnimationListProps) => {
   }, [data]);
 
   useEffect(() => {
-    if (projectJsonData) {
-      saveNewProjectMutate({
-        name: projectJsonData.nm,
-        animation: projectJsonData,
-      });
-    }
+    (async () => {
+      if (projectJsonData) {
+        const res = await saveNewProjectMutate({
+          name: projectJsonData.nm,
+          animation: projectJsonData,
+        });
+
+        if (res.data) {
+          navigate(`/project/${res.data?._id}`);
+        }
+      }
+    })();
   }, [projectJsonData]);
 
   return (
