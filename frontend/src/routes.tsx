@@ -4,9 +4,11 @@ import {
   createRoutesFromElements,
 } from 'react-router-dom';
 
+import ProtectedRoute from '~/components/ProtectedRoute';
+
 import Login from '~/pages/Login';
 import Home from '~/pages/Home';
-import ProtectedRoute from '~/components/ProtectedRoute';
+import Project from '~/pages/Project';
 
 const router: ReturnType<typeof createBrowserRouter> = createBrowserRouter(
   createRoutesFromElements(
@@ -16,6 +18,14 @@ const router: ReturnType<typeof createBrowserRouter> = createBrowserRouter(
         element={
           <ProtectedRoute>
             <Home />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/project/:projectId"
+        element={
+          <ProtectedRoute>
+            <Project />
           </ProtectedRoute>
         }
       />

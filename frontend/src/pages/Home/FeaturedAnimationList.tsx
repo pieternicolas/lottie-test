@@ -1,8 +1,14 @@
 import { useQuery } from '@apollo/client';
+import { useAtom, useSetAtom } from 'jotai';
 import { useEffect, useMemo, useState } from 'react';
 
 import Button from '~/components/Button';
 import Loader from '~/components/Loader';
+import {
+  chosenProjectJsonUrlAtom,
+  getProjectJsonAtom,
+  saveNewProjectAtom,
+} from '~/store/project';
 import {
   PublicAnimation,
   PublicAnimationsQuery,
@@ -12,20 +18,18 @@ import {
 type FeaturedAnimationListProps = {};
 
 const FeaturedAnimationList = ({}: FeaturedAnimationListProps) => {
+  const setChosenProjectUrl = useSetAtom(chosenProjectJsonUrlAtom);
+
+  const [{ data: projectJsonData }] = useAtom(getProjectJsonAtom);
+  const [{ mutateAsync: saveNewProjectMutate }] = useAtom(saveNewProjectAtom);
+
   const { data, loading, refetch } = useQuery<PublicAnimationsQuery>(
     getPublicAnimationsQuery,
     { variables: { after: '' }, notifyOnNetworkStatusChange: true }
   );
 
   const [publicAnimationsList, setPublicAnimationsList] = useState<
-    Map<
-      string,
-      {
-        jsonUrl: string;
-        gifUrl: string;
-        name: string;
-      }
-    >
+    Map<string, PublicAnimation['node']>
   >(new Map());
 
   const paginationData = useMemo(() => {
@@ -41,6 +45,10 @@ const FeaturedAnimationList = ({}: FeaturedAnimationListProps) => {
       totalCount: data.featuredPublicAnimations.totalCount,
     };
   }, [data]);
+
+  const onChooseAnimation = (animation: PublicAnimation['node']) => {
+    setChosenProjectUrl(animation.jsonUrl);
+  };
 
   useEffect(() => {
     if (data?.featuredPublicAnimations?.edges) {
@@ -63,6 +71,15 @@ const FeaturedAnimationList = ({}: FeaturedAnimationListProps) => {
     }
   }, [data]);
 
+  useEffect(() => {
+    if (projectJsonData) {
+      saveNewProjectMutate({
+        name: projectJsonData.nm,
+        animation: projectJsonData,
+      });
+    }
+  }, [projectJsonData]);
+
   return (
     <>
       <div className="max-h-[80vh] min-h-[300px] overflow-y-auto relative">
@@ -74,6 +91,7 @@ const FeaturedAnimationList = ({}: FeaturedAnimationListProps) => {
               <div
                 key={publicAnimation.jsonUrl}
                 className="bg-white hover:shadow cursor-pointer rounded"
+                onClick={() => onChooseAnimation(publicAnimation)}
               >
                 <img src={publicAnimation.gifUrl} alt={publicAnimation.name} />
               </div>

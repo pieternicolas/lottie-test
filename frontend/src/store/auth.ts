@@ -20,7 +20,8 @@ export const loginAtom = atomWithMutation(() => ({
   mutationFn: async (data: LoginFormData) => {
     const res = await axios({
       method: 'post',
-      url: `${import.meta.env.VITE_API_URL}/auth/login`,
+      baseURL: import.meta.env.VITE_API_URL,
+      url: '/auth/login',
       data,
     });
 
