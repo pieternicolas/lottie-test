@@ -9,6 +9,7 @@ projectRouter.post('/new', async (req, res) => {
     const newProject = new Project({
       name: req.body.name,
       animation: req.body.animation,
+      owners: [req.headers.authorization],
     });
 
     const savedProject = await newProject.save();

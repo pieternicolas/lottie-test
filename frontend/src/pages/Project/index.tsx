@@ -94,13 +94,16 @@ const ProjectView = () => {
 
   return (
     <div className="flex h-full">
-      <div className="flex-1 p-4 border-r border-gray-700 flex items-center justify-center">
-        <Lottie
-          animationData={projectData?.animation}
-          className="w-full max-w-[500px]"
-        />
+      <div className="flex-1 p-4 border-r border-gray-700 flex flex-col gap-4">
+        <p className="font-semibold text-xl">Project: {projectData?.name}</p>
+        <div className="flex items-center justify-center flex-1">
+          <Lottie
+            animationData={projectData?.animation}
+            className="w-full max-w-[500px]"
+          />
+        </div>
       </div>
-      <div className="flex-1 flex max-w-[30vw]">
+      <div className="flex-1 flex min-w-[350px] max-w-[30vw]">
         <div className="p-4 border-r border-gray-300 w-1/2">
           <p className="text-lg font-bold mb-2">Controls</p>
 

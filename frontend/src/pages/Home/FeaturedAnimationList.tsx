@@ -1,5 +1,6 @@
 import { useQuery } from '@apollo/client';
 import { useAtom, useSetAtom } from 'jotai';
+import { RESET } from 'jotai/utils';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -83,6 +84,7 @@ const FeaturedAnimationList = ({}: FeaturedAnimationListProps) => {
         });
 
         if (res.data) {
+          setChosenProjectUrl(RESET);
           navigate(`/project/${res.data?._id}`);
         }
       }
