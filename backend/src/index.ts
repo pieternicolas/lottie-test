@@ -4,6 +4,7 @@ import cors from 'cors';
 
 import { connectDatabase } from './db';
 import authRouter from './controllers/authController';
+import projectRouter from './controllers/projectController';
 
 dotenv.config();
 
@@ -33,6 +34,7 @@ app.get('/check', (req: Request, res: Response) => {
   res.send('Health Check!');
 });
 app.use('/auth', authRouter);
+app.use('/projects', projectRouter);
 
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);
