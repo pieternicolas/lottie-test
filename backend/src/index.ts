@@ -9,6 +9,7 @@ import authRouter from './controllers/authController';
 import projectRouter from './controllers/projectController';
 import socketRouter from './controllers/socketController';
 import userRouter from './controllers/userController';
+import User from './models/user';
 
 dotenv.config();
 
@@ -27,14 +28,20 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use((req, res, next) => {
-  // TEMP AUTH
-  if (
-    !req.headers?.authorization &&
-    !req.originalUrl.includes('/auth') &&
-    !req.originalUrl.includes('/check')
-  ) {
-    res.status(401).send('Unauthzorized');
+app.use(async (req, res, next) => {
+  if (req.originalUrl.includes('/auth') || req.originalUrl.includes('/check')) {
+    next();
+    return;
+  }
+
+  if (!req.headers?.authorization) {
+    res.status(401).send('Unauthorized');
+    return;
+  }
+
+  const findUser = await User.findOne({ _id: req.headers.authorization });
+  if (!findUser) {
+    res.status(401).send('Unauthorized');
     return;
   }
 

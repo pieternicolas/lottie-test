@@ -1,15 +1,22 @@
 import { Server } from 'socket.io';
+
 import Project from '../models/project';
+import User from '../models/user';
 
 const socketRouter = (io: Server) => {
   io.use((socket, next) => {
-    // TEMP AUTH
-    if (socket.handshake.auth?.token) {
-      next();
-    } else {
-      const err = new Error('not authorized');
-      next(err);
+    if (!socket.handshake.auth?.token) {
+      next(new Error('Unauthorized'));
+      return;
     }
+
+    const findUser = User.findOne({ _id: socket.handshake.auth.token });
+    if (!findUser) {
+      next(new Error('Unauthorized'));
+      return;
+    }
+
+    next();
   });
 
   io.on('connection', (socket) => {
