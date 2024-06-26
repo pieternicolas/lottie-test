@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { atom } from 'jotai';
 import { atomWithReset } from 'jotai/utils';
 import { atomWithMutation, atomWithQuery } from 'jotai-tanstack-query';
 
@@ -14,6 +13,7 @@ export type ProjectAnimation = {
 };
 
 export type Project = {
+  _id: string;
   name: string;
   animation: ProjectAnimation;
 };
@@ -34,7 +34,7 @@ export const getProjectJsonAtom = atomWithQuery((get) => ({
 
 export const saveNewProjectAtom = atomWithMutation((get) => ({
   mutationKey: ['saveNewProject'],
-  mutationFn: async (project: Project) => {
+  mutationFn: async (project: Omit<Project, '_id'>) => {
     const res = await axios({
       method: 'post',
       baseURL: import.meta.env.VITE_API_URL,
@@ -52,8 +52,7 @@ export const saveNewProjectAtom = atomWithMutation((get) => ({
   },
 }));
 
-export const projectIdAtom = atom<string>('');
-export const projectAtom = atom<Project | null>(null);
+export const projectIdAtom = atomWithReset<string>('');
 
 export const getProjectByIdAtom = atomWithQuery((get) => ({
   queryKey: ['getProjectById', get(projectIdAtom)],
@@ -71,4 +70,21 @@ export const getProjectByIdAtom = atomWithQuery((get) => ({
     return res.data;
   },
   enabled: Boolean(get(projectIdAtom)),
+}));
+
+export const getProjectsAtom = atomWithQuery((get) => ({
+  queryKey: ['getProjects'],
+  queryFn: async () => {
+    const res = await axios<{
+      data: Array<Project>;
+    }>({
+      method: 'get',
+      baseURL: import.meta.env.VITE_API_URL,
+      url: '/projects',
+      headers: {
+        Authorization: get(currentUserAtom)?.id,
+      },
+    });
+    return res.data;
+  },
 }));

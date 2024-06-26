@@ -24,17 +24,31 @@ projectRouter.post('/new', async (req, res) => {
 
 projectRouter.get('/:projectId', async (req, res) => {
   try {
-    const findExistingUser = await Project.findOne({
+    const findExistingProject = await Project.findOne({
       _id: req.params.projectId,
     });
 
-    if (findExistingUser) {
+    if (findExistingProject) {
       res.json({
-        data: findExistingUser,
+        data: findExistingProject,
       });
     } else {
       res.status(404).json({ error: 'Project not found' });
     }
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+projectRouter.get('/', async (req, res) => {
+  try {
+    const allProjects = await Project.find({
+      owners: req.headers.authorization,
+    });
+
+    res.json({
+      data: allProjects,
+    });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }

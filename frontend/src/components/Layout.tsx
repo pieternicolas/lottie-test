@@ -1,13 +1,17 @@
 import { useAtom } from 'jotai';
-import { currentUserAtom } from '~/store/auth';
-import Button from './Button';
 import { RESET } from 'jotai/utils';
+import { useNavigate } from 'react-router-dom';
+
+import { currentUserAtom } from '~/store/auth';
+
+import Button from './Button';
 
 type LayoutProps = {
   children: React.ReactNode;
 };
 
 const Layout = ({ children }: LayoutProps) => {
+  const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
 
   return (
@@ -16,7 +20,10 @@ const Layout = ({ children }: LayoutProps) => {
         <p>Hello, {currentUser?.name}!</p>
         <Button
           className="bg-red-500 hover:bg-red-700"
-          onClick={() => setCurrentUser(RESET)}
+          onClick={() => {
+            setCurrentUser(RESET);
+            navigate(0);
+          }}
         >
           Logout
         </Button>

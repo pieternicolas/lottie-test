@@ -8,6 +8,7 @@ import { connectDatabase } from './db';
 import authRouter from './controllers/authController';
 import projectRouter from './controllers/projectController';
 import socketRouter from './controllers/socketController';
+import userRouter from './controllers/userController';
 
 dotenv.config();
 
@@ -45,6 +46,7 @@ app.get('/check', (req: Request, res: Response) => {
 });
 app.use('/auth', authRouter);
 app.use('/projects', projectRouter);
+app.use('/users', userRouter);
 socketRouter(io);
 
 server.listen(port, () => {

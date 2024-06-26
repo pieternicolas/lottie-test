@@ -1,8 +1,9 @@
 import { useAtom, useSetAtom } from 'jotai';
 import Lottie from 'lottie-react';
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useDebounce, useDeepCompareEffect } from 'ahooks';
+import { RESET } from 'jotai/utils';
 
 import {
   Project,
@@ -12,6 +13,8 @@ import {
 } from '~/store/project';
 import { socket } from '~/utils/socket';
 import RangeInput from '~/components/RangeInput';
+import Button from '~/components/Button';
+
 import LayerList from './LayerList';
 
 const ProjectView = () => {
@@ -55,14 +58,18 @@ const ProjectView = () => {
   };
 
   useEffect(() => {
-    socket.connect();
-    socket.on('connect', () => {
+    const handleOnConnect = () => {
       socket.emit('joinProject', projectId);
-    });
+    };
+
+    socket.connect();
+    socket.on('connect', handleOnConnect);
     return () => {
+      setProjectId(RESET);
+      socket.off('connect', handleOnConnect);
       socket.disconnect();
     };
-  }, []);
+  }, [projectId]);
 
   useEffect(() => {
     const handleNewAnimation = (project: Project) => {
@@ -95,7 +102,21 @@ const ProjectView = () => {
   return (
     <div className="flex h-full">
       <div className="flex-1 p-4 border-r border-gray-700 flex flex-col gap-4">
-        <p className="font-semibold text-xl">Project: {projectData?.name}</p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link
+              to="/"
+              className="text-blue-500 hover:underline hover:text-blue-700"
+            >
+              Back
+            </Link>
+            <p className="font-semibold text-xl">
+              Project: {projectData?.name}
+            </p>
+          </div>
+          <Button>Invite to project</Button>
+        </div>
+
         <div className="flex items-center justify-center flex-1">
           <Lottie
             animationData={projectData?.animation}
