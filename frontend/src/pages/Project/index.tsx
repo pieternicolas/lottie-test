@@ -1,4 +1,4 @@
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import Lottie from 'lottie-react';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
@@ -15,6 +15,9 @@ import { socket } from '~/utils/socket';
 import RangeInput from '~/components/RangeInput';
 import Button from '~/components/Button';
 import Modal from '~/components/Modal';
+import { currentUserAtom } from '~/store/auth';
+import Loader from '~/components/Loader';
+import { ErrorResponse } from '~/utils/axios';
 
 import LayerList from './LayerList';
 import InviteUserModal from './InviteUserModal';
@@ -23,8 +26,9 @@ const ProjectView = () => {
   const { projectId } = useParams();
   const [openModal, setOpenModal] = useState(false);
 
+  const currentUser = useAtomValue(currentUserAtom);
   const setProjectId = useSetAtom(projectIdAtom);
-  const [{ data }] = useAtom(getProjectByIdAtom);
+  const [{ data, error, isPending }] = useAtom(getProjectByIdAtom);
 
   const [hasEdited, setHasEdited] = useState(false);
   const [projectData, setProjectData] = useState<Project | null>(null);
@@ -102,6 +106,24 @@ const ProjectView = () => {
     }
   }, [throttledProjectData, hasEdited]);
 
+  if (isPending) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Loader className="w-44 h-44" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <p className="text-red-500">
+          Error: {(error as ErrorResponse)?.response?.data?.error}
+        </p>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="flex h-full">
@@ -119,9 +141,11 @@ const ProjectView = () => {
               </p>
             </div>
 
-            <Button onClick={() => setOpenModal(true)}>
-              Manage Collaborators
-            </Button>
+            {projectData?.owner === currentUser?.id && (
+              <Button onClick={() => setOpenModal(true)}>
+                Manage Collaborators
+              </Button>
+            )}
           </div>
 
           <div className="flex items-center justify-center flex-1">

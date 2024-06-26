@@ -1,7 +1,8 @@
 import * as z from 'zod';
 import { atomWithMutation } from 'jotai-tanstack-query';
 import { atomWithStorage } from 'jotai/utils';
-import axios from 'axios';
+
+import { axiosClient } from '~/utils/axios';
 
 export const loginSchema = z.object({
   name: z.string().trim().min(1, {
@@ -18,9 +19,8 @@ export const currentUserAtom = atomWithStorage<{
 export const loginAtom = atomWithMutation(() => ({
   mutationKey: ['login'],
   mutationFn: async (data: LoginFormData) => {
-    const res = await axios({
+    const res = await axiosClient({
       method: 'post',
-      baseURL: import.meta.env.VITE_API_URL,
       url: '/auth/login',
       data,
     });

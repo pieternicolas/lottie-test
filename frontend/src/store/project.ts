@@ -1,6 +1,7 @@
-import axios from 'axios';
 import { atomWithReset } from 'jotai/utils';
 import { atomWithMutation, atomWithQuery } from 'jotai-tanstack-query';
+
+import { axiosClient } from '~/utils/axios';
 
 import { currentUserAtom } from './auth';
 
@@ -15,7 +16,8 @@ export type ProjectAnimation = {
 export type Project = {
   _id: string;
   name: string;
-  owners: Array<string>;
+  owner: string;
+  collaborators: Array<string>;
   animation: ProjectAnimation;
 };
 
@@ -24,7 +26,7 @@ export const chosenProjectJsonUrlAtom = atomWithReset<string>('');
 export const getProjectJsonAtom = atomWithQuery((get) => ({
   queryKey: ['getProjectJson', get(chosenProjectJsonUrlAtom)],
   queryFn: async () => {
-    const res = await axios<ProjectAnimation>({
+    const res = await axiosClient<ProjectAnimation>({
       method: 'get',
       url: get(chosenProjectJsonUrlAtom),
     });
@@ -36,9 +38,8 @@ export const getProjectJsonAtom = atomWithQuery((get) => ({
 export const saveNewProjectAtom = atomWithMutation((get) => ({
   mutationKey: ['saveNewProject'],
   mutationFn: async (project: Omit<Project, '_id'>) => {
-    const res = await axios({
+    const res = await axiosClient({
       method: 'post',
-      baseURL: import.meta.env.VITE_API_URL,
       url: '/projects/new',
       data: {
         name: project.name,
@@ -58,11 +59,10 @@ export const projectIdAtom = atomWithReset<string>('');
 export const getProjectByIdAtom = atomWithQuery((get) => ({
   queryKey: ['getProjectById', get(projectIdAtom)],
   queryFn: async () => {
-    const res = await axios<{
+    const res = await axiosClient<{
       data: Project;
     }>({
       method: 'get',
-      baseURL: import.meta.env.VITE_API_URL,
       url: `/projects/${get(projectIdAtom)}`,
       headers: {
         Authorization: get(currentUserAtom)?.id,
@@ -76,11 +76,10 @@ export const getProjectByIdAtom = atomWithQuery((get) => ({
 export const getProjectsAtom = atomWithQuery((get) => ({
   queryKey: ['getProjects'],
   queryFn: async () => {
-    const res = await axios<{
+    const res = await axiosClient<{
       data: Array<Project>;
     }>({
       method: 'get',
-      baseURL: import.meta.env.VITE_API_URL,
       url: '/projects',
       headers: {
         Authorization: get(currentUserAtom)?.id,
@@ -93,11 +92,8 @@ export const getProjectsAtom = atomWithQuery((get) => ({
 export const inviteUserToProjectAtom = atomWithMutation((get) => ({
   mutationKey: ['inviteUserToProject'],
   mutationFn: async (userIds: string[]) => {
-    console.log(get(projectIdAtom), 'as');
-
-    const res = await axios({
+    const res = await axiosClient({
       method: 'patch',
-      baseURL: import.meta.env.VITE_API_URL,
       url: `/projects/${get(projectIdAtom)}/invite`,
       data: {
         userIds,

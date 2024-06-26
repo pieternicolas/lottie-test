@@ -1,4 +1,5 @@
 import express from 'express';
+import mongoose from 'mongoose';
 
 import Project from '../models/project';
 
@@ -9,7 +10,8 @@ projectRouter.post('/new', async (req, res) => {
     const newProject = new Project({
       name: req.body.name,
       animation: req.body.animation,
-      owners: [req.headers.authorization],
+      owner: req.headers.authorization,
+      collaborators: [req.headers.authorization],
     });
 
     const savedProject = await newProject.save();
@@ -29,7 +31,7 @@ projectRouter.patch('/:projectId/invite', async (req, res) => {
         _id: req.params.projectId,
       },
       {
-        owners: [...req.body.userIds],
+        collaborators: [...req.body.userIds],
       },
       { new: true }
     );
@@ -46,6 +48,7 @@ projectRouter.get('/:projectId', async (req, res) => {
   try {
     const findExistingProject = await Project.findOne({
       _id: req.params.projectId,
+      collaborators: new mongoose.Types.ObjectId(req.headers.authorization),
     });
 
     if (findExistingProject) {
@@ -63,7 +66,7 @@ projectRouter.get('/:projectId', async (req, res) => {
 projectRouter.get('/', async (req, res) => {
   try {
     const allProjects = await Project.find({
-      owners: req.headers.authorization,
+      collaborators: new mongoose.Types.ObjectId(req.headers.authorization),
     });
 
     res.json({

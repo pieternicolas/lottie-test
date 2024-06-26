@@ -25,7 +25,7 @@ const InviteUserModal = ({ onClose }: InviteUserModalProps) => {
   const usersList = useMemo(() => usersData?.data ?? null, [usersData]);
 
   useEffect(() => {
-    setInitialUsers(project?.owners ?? []);
+    setInitialUsers(project?.collaborators ?? []);
   }, [project]);
 
   const handleSave = async () => {
@@ -42,7 +42,7 @@ const InviteUserModal = ({ onClose }: InviteUserModalProps) => {
           className="flex items-center justify-between gap-4 py-2"
         >
           <div className="flex gap-2 items-center">
-            {project?.owners?.includes(user._id) && (
+            {project?.collaborators?.includes(user._id) && (
               <RiEyeLine className="text-green-500" />
             )}
             <p className="text-lg">{user.name}</p>
