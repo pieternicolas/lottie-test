@@ -14,9 +14,9 @@ import {
 import { socket } from '~/utils/socket';
 import RangeInput from '~/components/RangeInput';
 import Button from '~/components/Button';
+import Modal from '~/components/Modal';
 
 import LayerList from './LayerList';
-import Modal from '~/components/Modal';
 import InviteUserModal from './InviteUserModal';
 
 const ProjectView = () => {
@@ -72,7 +72,7 @@ const ProjectView = () => {
       socket.off('connect', handleOnConnect);
       socket.disconnect();
     };
-  }, [projectId]);
+  }, []);
 
   useEffect(() => {
     const handleNewAnimation = (project: Project) => {
