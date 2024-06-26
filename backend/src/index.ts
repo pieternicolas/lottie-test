@@ -7,8 +7,9 @@ import { Server as SocketServer } from 'socket.io';
 import { connectDatabase } from './db';
 import authRouter from './controllers/authController';
 import projectRouter from './controllers/projectController';
-import socketRouter from './controllers/socketController';
 import userRouter from './controllers/userController';
+import liveProjectController from './controllers/liveProjectController';
+
 import User from './models/user';
 
 dotenv.config();
@@ -54,7 +55,25 @@ app.get('/check', (req: Request, res: Response) => {
 app.use('/auth', authRouter);
 app.use('/projects', projectRouter);
 app.use('/users', userRouter);
-socketRouter(io);
+io.on('connection', (socket) => {
+  io.use((socket, next) => {
+    if (!socket.handshake.auth?.token) {
+      next(new Error('Unauthorized'));
+      return;
+    }
+
+    const findUser = User.findOne({ _id: socket.handshake.auth.token });
+    if (!findUser) {
+      next(new Error('Unauthorized'));
+      return;
+    }
+
+    next();
+  });
+
+  console.log(`User id connected: ${socket.handshake.auth?.token}`);
+  liveProjectController(io, socket);
+});
 
 server.listen(port, () => {
   console.log(`Server is listening on port ${port}`);
