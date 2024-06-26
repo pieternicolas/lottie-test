@@ -26,7 +26,7 @@ const socketRouter = (io: Server) => {
       console.log(
         `User ${socket.handshake.auth?.token} joined project: ${projectId}`
       );
-      socket.join(projectId);
+      socket.join(`project:${projectId}`);
     });
 
     socket.on('updateAnimation', async (animation) => {
@@ -37,9 +37,24 @@ const socketRouter = (io: Server) => {
       );
 
       if (res) {
-        socket.to(String(res?._id)).emit('getNewAnimation', res);
+        socket.to(`project:${res._id}`).emit('getNewAnimation', res);
       }
     });
+
+    socket.on('joinChatroom', (chatroomId: string) => {
+      console.log(
+        `User ${socket.handshake.auth?.token} joined chatroom: ${chatroomId}`
+      );
+      socket.join(`chatroom:${chatroomId}`);
+    });
+
+    socket.on(
+      'sendMessage',
+      ({ chatroomId, message }: { chatroomId: string; message: string }) => {
+        // TODO: Save message to database
+        socket.to(`chatroom:${chatroomId}`).emit('newMessage', message);
+      }
+    );
   });
 };
 
