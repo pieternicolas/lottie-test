@@ -116,10 +116,17 @@ const ProjectView = () => {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-full">
+      <div className="flex flex-col items-center justify-center h-full gap-2">
         <p className="text-red-500">
           Error: {(error as ErrorResponse)?.response?.data?.error}
         </p>
+
+        <Link
+          to="/"
+          className="text-blue-500 hover:underline hover:text-blue-700"
+        >
+          Back to Home
+        </Link>
       </div>
     );
   }
