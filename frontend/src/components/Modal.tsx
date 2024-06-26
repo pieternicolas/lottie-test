@@ -1,3 +1,5 @@
+import { RiCloseLine } from '@remixicon/react';
+
 import Card from './Card';
 
 type ModalProps = {
@@ -31,7 +33,7 @@ const Modal = ({ children, open, onClose, title }: ModalProps) => {
           <div className="flex justify-between items-center">
             <p className="text-xl font-bold">{title}</p>
             <button className="font-bold" onClick={closeModal}>
-              &#10005;
+              <RiCloseLine />
             </button>
           </div>
 

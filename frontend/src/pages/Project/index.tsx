@@ -162,7 +162,7 @@ const ProjectView = () => {
             />
           </div>
         </div>
-        <div className="flex-1 flex min-w-[350px] max-w-[30vw]">
+        <div className="flex-1 flex min-w-[450px] max-w-[30vw]">
           <div className="p-4 border-r border-gray-300 w-1/2">
             <p className="text-lg font-bold mb-2">Controls</p>
 

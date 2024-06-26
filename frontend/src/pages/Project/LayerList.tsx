@@ -1,3 +1,10 @@
+import {
+  RiCheckLine,
+  RiDeleteBin2Line,
+  RiDraggable,
+  RiEyeLine,
+  RiEyeOffLine,
+} from '@remixicon/react';
 import clsx from 'clsx';
 import { DragEvent, useEffect, useMemo, useState } from 'react';
 
@@ -80,16 +87,15 @@ const LayerList = ({ layers, onUpdateLayers }: LayerListProps) => {
 
   return (
     <div className="flex flex-col gap-1">
-      <div className="flex justify-between items-center">
-        <p className="text-lg font-bold mb-2">Layers</p>
+      <div className="flex justify-between items-center mb-2">
+        <p className="text-lg font-bold">Layers</p>
 
         {selectedLayers.length > 0 && (
-          <span
+          <RiDeleteBin2Line
+            size={18}
             className="font-bold text-red-700 cursor-pointer"
             onClick={handleClearSelectedLayers}
-          >
-            &#10005;
-          </span>
+          />
         )}
       </div>
 
@@ -97,7 +103,7 @@ const LayerList = ({ layers, onUpdateLayers }: LayerListProps) => {
         <div
           key={index}
           className={clsx(
-            'p-2 rounded hover:bg-blue-100 hover:cursor-pointer flex justify-between items-center',
+            'px-1 py-2 rounded hover:bg-blue-100 hover:cursor-pointer flex items-center gap-1',
             selectedLayers.includes(layer.nm) ? 'bg-green-100' : ''
           )}
           draggable="true"
@@ -107,12 +113,14 @@ const LayerList = ({ layers, onUpdateLayers }: LayerListProps) => {
           onDrop={() => handleDrop(layer)}
           onClick={() => handleSelectLayer(layer.nm)}
         >
+          <RiDraggable size={18} />
+
           <p className="whitespace-nowrap overflow-hidden text-ellipsis">
             {layer.nm}
           </p>
 
-          <div className="flex gap-1">
-            {selectedLayers.includes(layer.nm) && <span>&#10003;</span>}
+          <div className="flex items-center gap-1 ml-auto">
+            {selectedLayers.includes(layer.nm) && <RiCheckLine />}
             {hiddenLayers.includes(layer.nm) ? (
               <span
                 className="hover:text-green-500 font-bold"
@@ -121,7 +129,7 @@ const LayerList = ({ layers, onUpdateLayers }: LayerListProps) => {
                   handleToggleHiddenLayer(layer.nm);
                 }}
               >
-                &#8722;
+                <RiEyeOffLine size={18} />
               </span>
             ) : (
               <span
@@ -131,7 +139,7 @@ const LayerList = ({ layers, onUpdateLayers }: LayerListProps) => {
                   handleToggleHiddenLayer(layer.nm);
                 }}
               >
-                &#9788;
+                <RiEyeLine size={18} />
               </span>
             )}
           </div>
