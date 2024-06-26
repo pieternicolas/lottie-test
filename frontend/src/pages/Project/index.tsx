@@ -9,6 +9,7 @@ import {
   Project,
   ProjectAnimation,
   getProjectByIdAtom,
+  projectAtom,
   projectIdAtom,
 } from '~/store/project';
 import { socket } from '~/utils/socket';
@@ -31,7 +32,7 @@ const ProjectView = () => {
   const [{ data, error, isPending }] = useAtom(getProjectByIdAtom);
 
   const [hasEdited, setHasEdited] = useState(false);
-  const [projectData, setProjectData] = useState<Project | null>(null);
+  const [projectData, setProjectData] = useAtom(projectAtom);
   const throttledProjectData = useDebounce(projectData, { wait: 500 });
 
   const handleChangeSpeed = (value: number) => {
@@ -73,6 +74,7 @@ const ProjectView = () => {
     socket.on('connect', handleOnConnect);
     return () => {
       setProjectId(RESET);
+      setProjectData(RESET);
       socket.off('connect', handleOnConnect);
       socket.disconnect();
     };

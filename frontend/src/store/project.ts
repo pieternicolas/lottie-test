@@ -1,4 +1,4 @@
-import { atomWithReset } from 'jotai/utils';
+import { atomWithReset, atomWithStorage } from 'jotai/utils';
 import { atomWithMutation, atomWithQuery } from 'jotai-tanstack-query';
 
 import { axiosClient } from '~/utils/axios';
@@ -55,6 +55,12 @@ export const saveNewProjectAtom = atomWithMutation((get) => ({
 }));
 
 export const projectIdAtom = atomWithReset<string>('');
+export const projectAtom = atomWithStorage<Project | null>(
+  'project',
+  null,
+  undefined,
+  { getOnInit: true }
+);
 
 export const getProjectByIdAtom = atomWithQuery((get) => ({
   queryKey: ['getProjectById', get(projectIdAtom)],
