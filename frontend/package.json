@@ -13,6 +13,7 @@
     "@apollo/client": "^3.10.6",
     "@hookform/resolvers": "^3.6.0",
     "@lottiefiles/relottie-parse": "^1.5.0",
+    "@remixicon/react": "^4.2.0",
     "@tanstack/query-core": "^5.45.0",
     "@tanstack/react-query": "^5.45.1",
     "ahooks": "^3.8.0",

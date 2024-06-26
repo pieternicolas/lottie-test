@@ -15,6 +15,7 @@ export type ProjectAnimation = {
 export type Project = {
   _id: string;
   name: string;
+  owners: Array<string>;
   animation: ProjectAnimation;
 };
 
@@ -81,6 +82,26 @@ export const getProjectsAtom = atomWithQuery((get) => ({
       method: 'get',
       baseURL: import.meta.env.VITE_API_URL,
       url: '/projects',
+      headers: {
+        Authorization: get(currentUserAtom)?.id,
+      },
+    });
+    return res.data;
+  },
+}));
+
+export const inviteUserToProjectAtom = atomWithMutation((get) => ({
+  mutationKey: ['inviteUserToProject'],
+  mutationFn: async (userIds: string[]) => {
+    console.log(get(projectIdAtom), 'as');
+
+    const res = await axios({
+      method: 'patch',
+      baseURL: import.meta.env.VITE_API_URL,
+      url: `/projects/${get(projectIdAtom)}/invite`,
+      data: {
+        userIds,
+      },
       headers: {
         Authorization: get(currentUserAtom)?.id,
       },

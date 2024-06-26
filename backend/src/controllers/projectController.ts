@@ -22,6 +22,26 @@ projectRouter.post('/new', async (req, res) => {
   }
 });
 
+projectRouter.patch('/:projectId/invite', async (req, res) => {
+  try {
+    const updatedProject = await Project.findOneAndUpdate(
+      {
+        _id: req.params.projectId,
+      },
+      {
+        owners: [...req.body.userIds],
+      },
+      { new: true }
+    );
+
+    res.json({
+      data: updatedProject,
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 projectRouter.get('/:projectId', async (req, res) => {
   try {
     const findExistingProject = await Project.findOne({

@@ -16,9 +16,12 @@ import RangeInput from '~/components/RangeInput';
 import Button from '~/components/Button';
 
 import LayerList from './LayerList';
+import Modal from '~/components/Modal';
+import InviteUserModal from './InviteUserModal';
 
 const ProjectView = () => {
   const { projectId } = useParams();
+  const [openModal, setOpenModal] = useState(false);
 
   const setProjectId = useSetAtom(projectIdAtom);
   const [{ data }] = useAtom(getProjectByIdAtom);
@@ -100,52 +103,65 @@ const ProjectView = () => {
   }, [throttledProjectData, hasEdited]);
 
   return (
-    <div className="flex h-full">
-      <div className="flex-1 p-4 border-r border-gray-700 flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link
-              to="/"
-              className="text-blue-500 hover:underline hover:text-blue-700"
-            >
-              Back
-            </Link>
-            <p className="font-semibold text-xl">
-              Project: {projectData?.name}
-            </p>
+    <>
+      <div className="flex h-full">
+        <div className="flex-1 p-4 border-r border-gray-700 flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Link
+                to="/"
+                className="text-blue-500 hover:underline hover:text-blue-700"
+              >
+                Back
+              </Link>
+              <p className="font-semibold text-xl">
+                Project: {projectData?.name}
+              </p>
+            </div>
+
+            <Button onClick={() => setOpenModal(true)}>
+              Manage Collaborators
+            </Button>
           </div>
-          <Button>Invite to project</Button>
-        </div>
 
-        <div className="flex items-center justify-center flex-1">
-          <Lottie
-            animationData={projectData?.animation}
-            className="w-full max-w-[500px]"
-          />
+          <div className="flex items-center justify-center flex-1">
+            <Lottie
+              animationData={projectData?.animation}
+              className="w-full max-w-[500px]"
+            />
+          </div>
+        </div>
+        <div className="flex-1 flex min-w-[350px] max-w-[30vw]">
+          <div className="p-4 border-r border-gray-300 w-1/2">
+            <p className="text-lg font-bold mb-2">Controls</p>
+
+            <RangeInput
+              label="Framerate"
+              min={0}
+              max={120}
+              value={Number(projectData?.animation?.fr ?? 0)}
+              onChange={handleChangeSpeed}
+              step={1}
+            />
+          </div>
+
+          <div className="w-1/2 p-4">
+            <LayerList
+              layers={projectData?.animation?.layers ?? []}
+              onUpdateLayers={handleUpdateLayers}
+            />
+          </div>
         </div>
       </div>
-      <div className="flex-1 flex min-w-[350px] max-w-[30vw]">
-        <div className="p-4 border-r border-gray-300 w-1/2">
-          <p className="text-lg font-bold mb-2">Controls</p>
 
-          <RangeInput
-            label="Framerate"
-            min={0}
-            max={120}
-            value={Number(projectData?.animation?.fr ?? 0)}
-            onChange={handleChangeSpeed}
-            step={1}
-          />
-        </div>
-
-        <div className="w-1/2 p-4">
-          <LayerList
-            layers={projectData?.animation?.layers ?? []}
-            onUpdateLayers={handleUpdateLayers}
-          />
-        </div>
-      </div>
-    </div>
+      <Modal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        title={`Manage Collaborators on "${projectData?.name}"`}
+      >
+        <InviteUserModal onClose={() => setOpenModal(false)} />
+      </Modal>
+    </>
   );
 };
 
