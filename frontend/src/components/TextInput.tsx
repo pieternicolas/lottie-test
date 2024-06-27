@@ -7,6 +7,8 @@ type InputProps = {
   value: string;
   error?: string;
   className?: string;
+  disabled?: boolean;
+  placeholder?: string;
 };
 
 const TextInput: React.FC<InputProps> = ({
@@ -16,6 +18,8 @@ const TextInput: React.FC<InputProps> = ({
   value,
   error,
   className,
+  disabled,
+  placeholder,
 }) => {
   return (
     <div className="relative">
@@ -35,6 +39,8 @@ const TextInput: React.FC<InputProps> = ({
         )}
         value={value}
         onChange={onChange}
+        disabled={disabled}
+        placeholder={placeholder}
       />
       {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
     </div>

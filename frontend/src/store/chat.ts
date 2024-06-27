@@ -1,6 +1,6 @@
 import { atom } from 'jotai';
 import { atomWithQuery } from 'jotai-tanstack-query';
-import { atomWithReset } from 'jotai/utils';
+import { atomWithReset, atomWithStorage } from 'jotai/utils';
 import { z } from 'zod';
 
 import { axiosClient } from '~/utils/axios';
@@ -48,6 +48,15 @@ export const getAllChatsAtom = atomWithQuery((get) => ({
   },
 }));
 
+// export const connectedToChatServerAtom = atomWithStorage(
+//   'connectedToChatServer',
+//   false,
+//   undefined,
+//   {
+//     getOnInit: true,
+//   }
+// );
+export const connectedToChatServerAtom = atomWithReset(false);
 export const activeChatAtom = atomWithReset<string | null>(null);
 export const activeChatRoomsAtom = atomWithReset<Map<string, ChatRoom>>(
   new Map()

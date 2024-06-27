@@ -9,10 +9,12 @@ import {
   ChatRoom,
   activeChatAtom,
   chatRoomAtom,
+  connectedToChatServerAtom,
   getAllChatsAtom,
 } from '~/store/chat';
 import { User, getOtherUsersAtom } from '~/store/user';
 import { socket } from '~/utils/socket';
+
 import ChatWindow from './ChatWindow';
 
 const Chat = () => {
@@ -25,18 +27,28 @@ const Chat = () => {
     [existingChatsData]
   );
 
+  const [connectedToChatServer, setConnectedToChatServer] = useAtom(
+    connectedToChatServerAtom
+  );
   const [activeChat, setActiveChat] = useAtom(activeChatAtom);
   const [chatroom, dispatchChatroomAction] = useAtom(chatRoomAtom);
 
   useEffect(() => {
     const handleOnConnect = () => {
       socket.emit('joinChatChannel');
+      setConnectedToChatServer(true);
+    };
+
+    const handleOnDisconnect = () => {
+      setConnectedToChatServer(false);
     };
 
     socket.connect();
     socket.on('connect', handleOnConnect);
+    socket.on('disconnect', handleOnDisconnect);
     return () => {
       socket.off('connect', handleOnConnect);
+      socket.off('disconnect', handleOnDisconnect);
       socket.disconnect();
       dispatchChatroomAction({ type: 'reset' });
     };
@@ -77,7 +89,15 @@ const Chat = () => {
 
       <div className="px-4 py-2 bg-white border-l border-gray-200 relative">
         <div className="flex gap-8">
-          <p>Chats</p>
+          <p>
+            Chats
+            <span
+              className={clsx(
+                'w-3 h-3 rounded-full inline-block ml-4',
+                connectedToChatServer ? 'bg-green-500' : 'bg-red-500'
+              )}
+            ></span>
+          </p>
           {activeChat === 'all' ? (
             <RiCloseLine
               className="cursor-pointer hover:text-red-500"

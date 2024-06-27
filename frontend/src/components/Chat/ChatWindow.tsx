@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { RESET } from 'jotai/utils';
@@ -9,6 +9,7 @@ import {
   ChatRoom,
   activeChatAtom,
   chatMessageSchema,
+  connectedToChatServerAtom,
 } from '~/store/chat';
 import TextInput from '~/components/TextInput';
 import { socket } from '~/utils/socket';
@@ -22,12 +23,13 @@ const chatDefaultValues: ChatMessageFormData = {
 };
 
 const ChatWindow = ({ chat }: ChatWindowProps) => {
+  const connectedToChatServer = useAtomValue(connectedToChatServerAtom);
+  const [activeChat, setActiveChat] = useAtom(activeChatAtom);
+
   const { handleSubmit, control, reset } = useForm({
     resolver: zodResolver(chatMessageSchema),
     defaultValues: chatDefaultValues,
   });
-
-  const [activeChat, setActiveChat] = useAtom(activeChatAtom);
 
   const onSubmit = handleSubmit((data) => {
     socket.emit('sendMessage', {
@@ -79,12 +81,15 @@ const ChatWindow = ({ chat }: ChatWindowProps) => {
           <Controller
             control={control}
             name="message"
-            render={({ field, fieldState: { error } }) => (
+            render={({ field }) => (
               <TextInput
                 name="message"
                 onChange={field.onChange}
                 value={field.value}
-                error={error?.message}
+                disabled={!connectedToChatServer}
+                placeholder={
+                  connectedToChatServer ? 'Type a message' : 'Not connected'
+                }
               />
             )}
           />
