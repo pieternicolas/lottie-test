@@ -93,9 +93,10 @@ const Chat = () => {
             Chats
             <span
               className={clsx(
-                'w-3 h-3 rounded-full inline-block ml-4',
+                'w-3 h-3 rounded-full inline-block ml-4 cursor-pointer',
                 connectedToChatServer ? 'bg-green-500' : 'bg-red-500'
               )}
+              onClick={() => !connectedToChatServer && socket.connect()}
             ></span>
           </p>
           {activeChat === 'all' ? (
