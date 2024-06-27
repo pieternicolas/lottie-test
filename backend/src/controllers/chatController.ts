@@ -14,7 +14,14 @@ chatRouter.get('/', async (req, res) => {
     });
 
     res.json({
-      data: allChats,
+      data: allChats.map((chat) => ({
+        _id: chat._id,
+        messages: chat.messages,
+        members: chat.members.filter(
+          (member) => member.toString() !== req.headers.authorization
+        ),
+        updatedAt: chat.updatedAt,
+      })),
     });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
