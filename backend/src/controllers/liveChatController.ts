@@ -52,12 +52,16 @@ const liveChatController = (io: Server, socket: Socket) => {
             },
           },
           { new: true, upsert: true }
-        );
+        ).lean();
 
-        const newMessage =
-          saveMessage.messages[saveMessage.messages.length - 1];
+        const newMessage = {
+          ...saveMessage.messages[saveMessage.messages.length - 1],
+          to: receiverId,
+        };
 
-        io.to(`chatChannel:${receiverId}`).emit('newMessage', newMessage);
+        io.to(`chatChannel:${receiverId}`)
+          .to(`chatChannel:${userId}`)
+          .emit('newMessage', newMessage);
       } catch (error) {
         console.log(error);
       }

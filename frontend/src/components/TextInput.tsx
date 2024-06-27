@@ -1,9 +1,12 @@
+import clsx from 'clsx';
+
 type InputProps = {
   name: string;
   label?: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   value: string;
   error?: string;
+  className?: string;
 };
 
 const TextInput: React.FC<InputProps> = ({
@@ -12,6 +15,7 @@ const TextInput: React.FC<InputProps> = ({
   onChange,
   value,
   error,
+  className,
 }) => {
   return (
     <div className="relative">
@@ -24,9 +28,11 @@ const TextInput: React.FC<InputProps> = ({
         id={name}
         name={name}
         type="text"
-        className={`rounded-md border border-gray-300 pl-3 pr-10 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full ${
-          error ? 'border-red-500' : ''
-        }`}
+        className={clsx(
+          `rounded-md border border-gray-300 pl-3 pr-10 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full`,
+          error ? 'border-red-500' : '',
+          className
+        )}
         value={value}
         onChange={onChange}
       />
