@@ -1,10 +1,13 @@
 import { useAtom } from 'jotai';
 import { RESET } from 'jotai/utils';
-import { useEffect, useMemo } from 'react';
+import { RiCloseLine, RiMessage2Line } from '@remixicon/react';
+import clsx from 'clsx';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { currentUserAtom } from '~/store/auth';
 import { getOtherUsersAtom } from '~/store/user';
+import { getAllChatsAtom } from '~/store/chat';
 import { socket } from '~/utils/socket';
 
 import Button from './Button';
@@ -16,10 +19,17 @@ type LayoutProps = {
 const Layout = ({ children }: LayoutProps) => {
   const navigate = useNavigate();
 
+  const [openChatDrawer, setOpenChatDrawer] = useState(false);
   const [currentUser, setCurrentUser] = useAtom(currentUserAtom);
+
   const [{ data: usersData }] = useAtom(getOtherUsersAtom);
+  const [{ data: existingChatsData }] = useAtom(getAllChatsAtom);
 
   const usersList = useMemo(() => usersData?.data ?? null, [usersData]);
+  const existingChats = useMemo(
+    () => existingChatsData?.data ?? null,
+    [existingChatsData]
+  );
 
   useEffect(() => {
     const handleOnConnect = () => {
@@ -36,7 +46,7 @@ const Layout = ({ children }: LayoutProps) => {
 
   useEffect(() => {
     const handleNewMessage = (chat: any) => {
-      console.log(chat);
+      console.log(chat, 'chat');
     };
 
     socket.on('newMessage', handleNewMessage);
@@ -44,6 +54,8 @@ const Layout = ({ children }: LayoutProps) => {
       socket.off('newMessage', handleNewMessage);
     };
   }, []);
+
+  console.log(existingChats);
 
   return (
     <div className="flex flex-col h-full">
@@ -62,20 +74,45 @@ const Layout = ({ children }: LayoutProps) => {
 
       <div className="flex-1 overflow-y-auto overflow-x-hidden">{children}</div>
 
-      <div className="border-t border-gray-500 shadow-lg px-4 py-4">
-        {usersList?.map((user) => (
-          <p
-            key={user._id}
-            onClick={() => {
-              socket.emit('sendMessage', {
-                receiverId: user._id,
-                message: 'Hello!',
-              });
-            }}
+      <div className="border-t border-gray-500 shadow-lg flex justify-end">
+        <div className="px-4 py-2 bg-white border-l border-gray-200 relative">
+          <div className="flex gap-8">
+            <p>Chats</p>
+            {openChatDrawer ? (
+              <RiCloseLine
+                className="cursor-pointer hover:text-red-500"
+                onClick={() => setOpenChatDrawer(false)}
+              />
+            ) : (
+              <RiMessage2Line
+                className="cursor-pointer hover:text-blue-500"
+                onClick={() => setOpenChatDrawer(true)}
+              />
+            )}
+          </div>
+
+          <div
+            className={clsx(
+              'absolute bottom-full right-0 flex flex-col bg-white rounded-l border border-gray-200 w-[250px] max-w-[40vh] overflow-y-auto',
+              openChatDrawer ? '' : 'hidden'
+            )}
           >
-            {user.name}
-          </p>
-        ))}
+            {usersList?.map((user) => (
+              <div
+                key={user._id}
+                onClick={() => {
+                  socket.emit('sendMessage', {
+                    receiverId: user._id,
+                    message: 'Hello!',
+                  });
+                }}
+                className="hover:bg-blue-100 cursor-pointer px-4 py-2"
+              >
+                <p>{user.name}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

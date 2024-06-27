@@ -10,6 +10,7 @@ import projectRouter from './controllers/projectController';
 import userRouter from './controllers/userController';
 import liveProjectController from './controllers/liveProjectController';
 import liveChatController from './controllers/liveChatController';
+import chatRouter from './controllers/chatController';
 
 import User from './models/user';
 
@@ -56,6 +57,7 @@ app.get('/check', (req: Request, res: Response) => {
 app.use('/auth', authRouter);
 app.use('/projects', projectRouter);
 app.use('/users', userRouter);
+app.use('/chats', chatRouter);
 io.on('connection', (socket) => {
   io.use((socket, next) => {
     if (!socket.handshake.auth?.token) {

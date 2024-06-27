@@ -1,6 +1,7 @@
 import { Server, Socket } from 'socket.io';
 
 import Chat from '../models/chat';
+import mongoose from 'mongoose';
 
 const liveChatController = (io: Server, socket: Socket) => {
   const userId = socket.handshake.auth?.token;
@@ -21,7 +22,22 @@ const liveChatController = (io: Server, socket: Socket) => {
       try {
         const saveMessage = await Chat.findOneAndUpdate(
           {
-            members: { $in: [userId, receiverId] },
+            members: {
+              $all: [
+                {
+                  $elemMatch: {
+                    $eq: mongoose.Types.ObjectId.createFromHexString(userId),
+                  },
+                },
+                {
+                  $elemMatch: {
+                    $eq: mongoose.Types.ObjectId.createFromHexString(
+                      receiverId
+                    ),
+                  },
+                },
+              ],
+            },
           },
           {
             $push: {
@@ -42,7 +58,9 @@ const liveChatController = (io: Server, socket: Socket) => {
           saveMessage.messages[saveMessage.messages.length - 1];
 
         io.to(`chatChannel:${receiverId}`).emit('newMessage', newMessage);
-      } catch (error) {}
+      } catch (error) {
+        console.log(error);
+      }
     }
   );
 };
