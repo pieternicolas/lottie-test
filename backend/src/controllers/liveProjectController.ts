@@ -7,7 +7,7 @@ const liveProjectController = (io: Server, socket: Socket) => {
     console.log(
       `User ${socket.handshake.auth?.token} joined project: ${projectId}`
     );
-    socket.join(projectId);
+    socket.join(`project:${projectId}`);
   });
 
   socket.on('updateAnimation', async (animation) => {
@@ -18,7 +18,7 @@ const liveProjectController = (io: Server, socket: Socket) => {
     );
 
     if (res) {
-      socket.to(String(res?._id)).emit('getNewAnimation', res);
+      socket.to(`project:${res._id}`).emit('getNewAnimation', res);
     }
   });
 };

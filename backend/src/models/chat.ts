@@ -2,11 +2,6 @@ import mongoose from 'mongoose';
 
 const Chat = new mongoose.Schema(
   {
-    owner: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-    },
     members: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     messages: [
       {
