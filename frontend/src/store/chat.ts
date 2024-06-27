@@ -1,6 +1,6 @@
 import { atom } from 'jotai';
 import { atomWithQuery } from 'jotai-tanstack-query';
-import { atomWithReset, atomWithStorage } from 'jotai/utils';
+import { atomWithReset } from 'jotai/utils';
 import { z } from 'zod';
 
 import { axiosClient } from '~/utils/axios';

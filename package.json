@@ -4,9 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev:frontend": "pnpm --filter \"frontend\" run dev",
-    "dev:backend": "pnpm --filter \"backend\" run dev",
-    "dev": "pnpm run dev:frontend & pnpm run dev:backend"
+    "dev": "pnpm -r dev",
+    "serve": "pnpm -r serve"
   },
   "keywords": [],
   "author": "",

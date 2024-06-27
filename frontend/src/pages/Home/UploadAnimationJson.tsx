@@ -1,13 +1,15 @@
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { currentUserAtom } from '~/store/auth';
 import { Project, saveNewProjectAtom } from '~/store/project';
 import { lottieParser } from '~/utils/lottie-parser';
 
 const UploadAnimationJson = () => {
   const navigate = useNavigate();
 
+  const currentUser = useAtomValue(currentUserAtom);
   const [{ mutateAsync: saveNewProjectMutate }] = useAtom(saveNewProjectAtom);
 
   const [animationData, setAnimationData] = useState<Project | null>(null);
@@ -41,6 +43,8 @@ const UploadAnimationJson = () => {
           const res = await saveNewProjectMutate({
             name: 'New Project',
             animation: JSON.parse(JSON.stringify(animationData)),
+            owner: String(currentUser?.id),
+            collaborators: [String(currentUser?.id)],
           });
 
           if (res.data) {
